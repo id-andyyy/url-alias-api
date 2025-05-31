@@ -1,14 +1,14 @@
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy import create_engine, Engine
+from sqlalchemy.orm import sessionmaker, Session
 
 from app.core.config import settings
 
-engine = create_engine(
+engine: Engine = create_engine(
     url=settings.DATABASE_URL_psycopg,
     pool_pre_ping=True,
 )
 
-SessionLocal = sessionmaker(
+SessionLocal: sessionmaker[Session] = sessionmaker(
     bind=engine,
     autocommit=False,
     autoflush=False,
