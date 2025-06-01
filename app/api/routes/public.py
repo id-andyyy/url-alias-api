@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session
 from starlette.responses import RedirectResponse
 
 from app.api.deps import get_db
-from app.crud.link import get_link_by_short_id
+from app.crud.link import crud_get_link_by_short_id
 from app.crud.stats import log_click
 from app.models import Link
 
@@ -14,6 +14,7 @@ router = APIRouter()
 
 @router.get(
     "/{short_id}",
+    description="Get a link by short ID.",
     status_code=status.HTTP_302_FOUND,
     responses={
         status.HTTP_302_FOUND: {"description": "Redirects to the original URL"},
@@ -24,7 +25,7 @@ def redirect_to_original(
         short_id: str,
         db: Session = Depends(get_db),
 ):
-    link: Link | None = get_link_by_short_id(db, short_id)
+    link: Link | None = crud_get_link_by_short_id(db, short_id)
 
     if link is None:
         raise HTTPException(

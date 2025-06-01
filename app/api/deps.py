@@ -28,13 +28,13 @@ def get_current_user(
     if user is None:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Неправильное имя пользователя или пароль",
+            detail="Incorrect username or password",
             headers={"WWW-Authenticate": "Basic"},
         )
     if not user.is_active:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail="У пользователей не достаточно прав",
+            detail="User is inactive",
             headers={"WWW-Authenticate": "Basic"},
         )
     return user
