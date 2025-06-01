@@ -1,4 +1,11 @@
 from fastapi import FastAPI
+import logging
+
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    datefmt='%Y-%m-%d %H:%M:%S'
+)
 
 from app.api.routes import main_router
 
@@ -9,8 +16,3 @@ app = FastAPI(
 )
 
 app.include_router(main_router)
-
-
-@app.get("/health", description="Health check endpoint", tags=["Health Check ✅"])
-async def health_check():
-    return {"status": "ok"}

@@ -1,10 +1,10 @@
 from datetime import datetime
 
-from pydantic import BaseModel
+from pydantic import BaseModel, HttpUrl
 
 
 class LinkBase(BaseModel):
-    orig_url: str
+    orig_url: HttpUrl
 
 
 class LinkCreate(LinkBase):

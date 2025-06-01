@@ -4,10 +4,7 @@ from string import ascii_letters, digits
 from sqlalchemy.orm import Session
 
 from app.crud.link import crud_get_link_by_short_id
-
-
-class ShortIdGenerationError(Exception):
-    pass
+from app.exceptions import ShortIdGenerationError
 
 
 def generate_short_id(db: Session, length: int = 8) -> str:

@@ -5,7 +5,7 @@ from fastapi.security import HTTPBasicCredentials, HTTPBasic
 from sqlalchemy.orm import Session
 from starlette import status
 
-from app.crud.user import authenticate_user
+from app.crud.user import crud_authenticate_user
 from app.db.session import SessionLocal
 from app.models.user import User
 
@@ -24,7 +24,7 @@ def get_current_user(
         credentials: HTTPBasicCredentials = Depends(security),
         db: Session = Depends(get_db)
 ) -> User:
-    user = authenticate_user(db, credentials.username, credentials.password)
+    user = crud_authenticate_user(db, credentials.username, credentials.password)
     if user is None:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,

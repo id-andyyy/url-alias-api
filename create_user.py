@@ -1,28 +1,51 @@
 import argparse
 import sys
 
-from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
-from app.crud.user import get_user_by_username, create_user, UserAlreadyExistsError
+from app.crud.user import crud_create_user, UserAlreadyExistsError
 from app.db.session import SessionLocal
+from app.exceptions import UserCreateError
 from app.models import User
 
+
 def parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description="Создание нового пользователя для Basic Auth")
+    parser = argparse.ArgumentParser(description="Create a new user for Basic Auth")
     parser.add_argument(
         "-u", "--username",
         type=str,
         required=True,
-        help="Логин нового пользователя (должен быть уникальным)"
+        help="Login of the new user (must be unique)"
     )
     parser.add_argument(
         "-p", "--password",
         type=str,
         required=True,
-        help="Пароль нового пользователя"
+        help="Password for the new user"
     )
     return parser.parse_args()
+
+
+def create_user(db: Session, username: str, password: str) -> None:
+    if not username or not password:
+        print("Error: username and password must not be empty", file=sys.stderr)
+        sys.exit(1)
+
+    try:
+        new_user: User = crud_create_user(db, username=username, plain_password=password)
+        print(f"New user created: username='{new_user.username}', id={new_user.id}")
+    except UserAlreadyExistsError as e:
+        print(e, file=sys.stderr)
+        sys.exit(1)
+    except UserCreateError as e:
+        print(e, file=sys.stderr)
+        sys.exit(1)
+    except Exception as e:
+        db.rollback()
+        print(f"Unknown error: {e}", file=sys.stderr)
+        sys.exit(1)
+    finally:
+        db.close()
 
 
 def main() -> None:
@@ -30,32 +53,8 @@ def main() -> None:
     username: str = args.username.strip()
     password: str = args.password.strip()
 
-    if not username or not password:
-        print("Ошибка: username и password не должны быть пустыми", file=sys.stderr)
-        sys.exit(1)
-
     db: Session = SessionLocal()
-    try:
-        existing_user = get_user_by_username(db, username)
-        if existing_user:
-            print(f"Пользователь с именем '{username}' уже существует", file=sys.stderr)
-            sys.exit(1)
-
-        new_user: User = create_user(db, username=username, plain_password=password)
-        print(f"Новый пользователь создан: username='{new_user.username}', id={new_user.id}")
-    except UserAlreadyExistsError as e:
-        print(f"Ошибка в имени пользователя: {e}", file=sys.stderr)
-        sys.exit(1)
-    except IntegrityError as e:
-        db.rollback()
-        print("Ошибка базы данных (IntegrityError):", e, file=sys.stderr)
-        sys.exit(1)
-    except Exception as e:
-        db.rollback()
-        print("Неожиданная ошибка:", e, file=sys.stderr)
-        sys.exit(1)
-    finally:
-        db.close()
+    create_user(db, username, password)
 
 
 if __name__ == "__main__":

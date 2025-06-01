@@ -1,3 +1,4 @@
+import logging
 from datetime import datetime
 
 from fastapi import APIRouter, status, Depends, HTTPException
@@ -6,8 +7,11 @@ from starlette.responses import RedirectResponse
 
 from app.api.deps import get_db
 from app.crud.link import crud_get_link_by_short_id
-from app.crud.stats import log_click
+from app.crud.stats import crud_log_click
+from app.exceptions import ClickLogError
 from app.models import Link
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter()
 
@@ -46,7 +50,10 @@ def redirect_to_original(
             detail="Link has expired",
         )
 
-    log_click(db, link.id)
+    try:
+        crud_log_click(db, link.id)
+    except ClickLogError as e:
+        logger.error(f"Error logging click for link {link.id}: {str(e)}")
 
     return RedirectResponse(
         url=link.orig_url,

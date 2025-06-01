@@ -1,7 +1,10 @@
 from datetime import datetime, timedelta
 
+from pydantic import HttpUrl
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
+from app.exceptions import LinkCreateError, LinkNotFoundError, LinkUpdateError
 from app.models import Link
 
 
@@ -37,7 +40,33 @@ def crud_create_link(
         is_active=is_active
     )
     db.add(new_link)
-    db.commit()
-    db.refresh(new_link)
+    try:
+        db.commit()
+        db.refresh(new_link)
+    except IntegrityError:
+        db.rollback()
+        raise LinkCreateError("Error while creating a link")
 
     return new_link
+
+
+def crud_deactivate_link(
+        db: Session,
+        short_id: str
+) -> Link | None:
+    link: Link | None = crud_get_link_by_short_id(db, short_id)
+
+    if link is None:
+        raise LinkNotFoundError("Link not found")
+
+    link.is_active = False
+    db.add(link)
+
+    try:
+        db.commit()
+        db.refresh(link)
+    except IntegrityError:
+        db.rollback()
+        raise LinkUpdateError("Error while deactivating a link")
+
+    return link
