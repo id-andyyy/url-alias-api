@@ -3,7 +3,7 @@ from fastapi import FastAPI
 from app.api.routes import main_router
 
 app = FastAPI(
-    title="URL Alias Service",
+    title="URL Alias Service 🪄",
     description="A simple URL alias service that allows users to create short links for their original URLs.",
     version="0.1.0"
 )
