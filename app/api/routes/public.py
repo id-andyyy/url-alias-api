@@ -1,5 +1,5 @@
 import logging
-from datetime import datetime
+from datetime import datetime, timezone
 
 from fastapi import APIRouter, status, Depends, HTTPException
 from sqlalchemy.orm import Session
@@ -43,7 +43,7 @@ def redirect_to_original(
             detail="Link is inactive",
         )
 
-    now: datetime = datetime.now()
+    now: datetime = datetime.now(timezone.utc)
     if link.expire_at <= now:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,

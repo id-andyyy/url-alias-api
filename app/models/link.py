@@ -1,5 +1,5 @@
-from datetime import datetime
-from sqlalchemy import ForeignKey
+from datetime import datetime, timezone
+from sqlalchemy import ForeignKey, DateTime
 from sqlalchemy.orm import relationship, Mapped, mapped_column
 from typing_extensions import Annotated
 
@@ -15,8 +15,10 @@ class Link(Base):
     short_id: Mapped[str] = mapped_column(unique=True, nullable=False, index=True)
     orig_url: Mapped[str] = mapped_column(nullable=False)
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
-    created_at: Mapped[datetime] = mapped_column(nullable=False)
-    expire_at: Mapped[datetime] = mapped_column(nullable=False)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False,
+                                                 default=lambda: datetime.now(timezone.utc))
+    expire_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False,
+                                                default=lambda: datetime.now(timezone.utc))
     is_active: Mapped[bool] = mapped_column(default=True, nullable=False)
 
     owner: Mapped["User"] = relationship(

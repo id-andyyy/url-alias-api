@@ -1,5 +1,5 @@
-from datetime import datetime
-from sqlalchemy import ForeignKey
+from datetime import datetime, timezone
+from sqlalchemy import ForeignKey, DateTime
 from sqlalchemy.orm import relationship, Mapped, mapped_column
 from typing_extensions import Annotated
 
@@ -13,7 +13,7 @@ class Click(Base):
 
     id: Mapped[intpk]
     link_id: Mapped[int] = mapped_column(ForeignKey("links.id", ondelete="CASCADE"), nullable=False)
-    clicked_at: Mapped[datetime] = mapped_column(nullable=False)
+    clicked_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False, default=lambda: datetime.now(timezone.utc))
 
     link: Mapped["Link"] = relationship(
         back_populates="clicks"
