@@ -8,8 +8,8 @@ class Settings(BaseSettings):
     POSTGRES_PASSWORD: str
     POSTGRES_DB: str
 
-    SUPERUSER_USERNAME: str
-    SUPERUSER_PASSWORD: str
+    DEFAULT_USER_USERNAME: str
+    DEFAULT_USER_PASSWORD: str
 
     @property
     def DATABASE_URL_psycopg(self):
