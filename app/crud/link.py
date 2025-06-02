@@ -14,12 +14,18 @@ def crud_get_link_by_short_id(db: Session, short_id: str) -> Link | None:
 def crud_get_user_links(
         db: Session,
         user_id: int,
+        is_valid: bool | None = True,
         is_active: bool | None = True,
         limit: int = 10,
         offset: int = 0
-) -> tuple[list[Link], int]:
+) -> tuple[list[Link] | None, int]:
     query = db.query(Link).filter(Link.user_id == user_id)
 
+    now: datetime = datetime.now(timezone.utc)
+    if is_valid is True:
+        query = query.filter(Link.expire_at >= now)
+    elif is_valid is False:
+        query = query.filter(Link.expire_at < now)
     if is_active is not None:
         query = query.filter(Link.is_active == is_active)
 
