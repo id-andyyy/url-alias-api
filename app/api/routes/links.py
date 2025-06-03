@@ -2,8 +2,7 @@ from fastapi import APIRouter, status, Depends, HTTPException, Query, Request
 from sqlalchemy.orm import Session
 
 from app.api.deps import get_db, get_current_user
-from app.crud.link import crud_create_link, crud_get_active_user_link_by_orig_url, crud_get_link_by_short_id, \
-    crud_deactivate_link, crud_get_user_links
+from app.crud.link import crud_create_link, crud_get_link_by_short_id, crud_deactivate_link, crud_get_user_links
 from app.exceptions import LinkCreateError, LinkNotFoundError, LinkUpdateError
 from app.models import User, Link
 from app.schemas.link import LinkCreate, LinkResponse, LinkListResponse
@@ -31,11 +30,6 @@ def create_link(
         current_user: User = Depends(get_current_user)
 ) -> LinkResponse | None:
     base_url: str = str(request.base_url).rstrip("/")
-
-    existing_link: Link | None = crud_get_active_user_link_by_orig_url(db, str(link_in.orig_url), current_user.id)
-    if existing_link is not None:
-        existing_link.short_url = f"{base_url}/{existing_link.short_id}"
-        return LinkResponse.model_validate(existing_link)
 
     try:
         new_link: Link = crud_create_link(
@@ -125,7 +119,8 @@ def read_links(
         request: Request,
         is_valid: bool | None = Query(None,
                                       description="Filter current and outdated links. If not provided, all links are returned"),
-        is_active: bool | None = Query(None, description="Filter active and inactive links. If not provided, all links are returned"),
+        is_active: bool | None = Query(None,
+                                       description="Filter active and inactive links. If not provided, all links are returned"),
         page: int = Query(1, ge=1, description="Page number for pagination"),
         page_size: int = Query(10, ge=1, le=100, description="Page size for pagination (1-100)"),
         db: Session = Depends(get_db),
