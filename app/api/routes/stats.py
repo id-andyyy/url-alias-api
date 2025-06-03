@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 
 from app.api.deps import get_db, get_current_user
 from app.crud.link import crud_get_link_by_short_id
-from app.crud.stats import crud_get_top_links_stats, crud_get_link_stats
+from app.crud.stats import crud_get_stats_for_user_links, crud_get_stats_for_single_link
 from app.models import User, Link
 from app.schemas.stats import StatsListResponse, StatsResponse
 
@@ -28,7 +28,7 @@ def read_top_links_stats(
         db: Session = Depends(get_db),
         current_user: User = Depends(get_current_user)
 ) -> StatsListResponse:
-    raw_stats: list[tuple[str, str, int, int, int]] = crud_get_top_links_stats(db, current_user.id, top, sort_by)
+    raw_stats: list[tuple[str, str, int, int, int]] = crud_get_stats_for_user_links(db, current_user.id, top, sort_by)
     base_url: str = str(request.base_url).rstrip("/")
 
     items: list[StatsResponse] = []
@@ -76,8 +76,15 @@ def read_link_stats(
             detail="You do not have permission to deactivate this link"
         )
 
+    result = crud_get_stats_for_single_link(db, link)
+    if result is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Stats not found"
+        )
+
     base_url: str = str(request.base_url).rstrip("/")
-    orig_url, short_id, last_hour_clicks, last_day_clicks, all_clicks = crud_get_link_stats(db, link)
+    orig_url, short_id, last_hour_clicks, last_day_clicks, all_clicks = crud_get_stats_for_single_link(db, link)
     return StatsResponse(
         orig_url=orig_url,
         short_url=f"{base_url}/{short_id}",
