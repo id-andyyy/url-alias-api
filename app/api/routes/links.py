@@ -15,6 +15,7 @@ router = APIRouter()
 @router.post(
     "/",
     description="Create a new link. If a link with the same original URL already exists for the user, it returns that link instead.",
+    response_model=LinkResponse,
     status_code=status.HTTP_201_CREATED,
     responses={
         status.HTTP_201_CREATED: {"description": "Link created successfully"},
@@ -28,7 +29,7 @@ def create_link(
         link_in: LinkCreate,
         db: Session = Depends(get_db),
         current_user: User = Depends(get_current_user)
-) -> LinkResponse:
+) -> LinkResponse | None:
     base_url: str = str(request.base_url).rstrip("/")
 
     existing_link: Link | None = crud_get_active_user_link_by_orig_url(db, str(link_in.orig_url), current_user.id)
@@ -62,7 +63,8 @@ def create_link(
 
 @router.patch(
     "/{short_id}/deactivate",
-    description="Deactivate a link by its short ID.",
+    description="Deactivate a link by its short ID",
+    response_model=LinkResponse,
     status_code=status.HTTP_200_OK,
     responses={
         status.HTTP_200_OK: {"description": "Link deactivated successfully"},
@@ -76,7 +78,7 @@ def deactivate_link(
         short_id: str,
         db: Session = Depends(get_db),
         current_user: User = Depends(get_current_user)
-) -> LinkResponse:
+) -> LinkResponse | None:
     base_url: str = str(request.base_url).rstrip("/")
 
     try:
@@ -110,6 +112,7 @@ def deactivate_link(
 
 @router.get(
     "/",
+    description="Get all links for the current user with optional filters and pagination",
     response_model=LinkListResponse,
     status_code=status.HTTP_200_OK,
     responses={
