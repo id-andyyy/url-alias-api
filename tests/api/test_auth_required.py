@@ -15,7 +15,10 @@ PRIVATE_ENDPOINTS: list[tuple[str, str, dict[str, str]]] = [
 ]
 
 
-@pytest.mark.parametrize("template, method, placeholders", PRIVATE_ENDPOINTS)
+@pytest.mark.parametrize(
+    "template, method, placeholders",
+    PRIVATE_ENDPOINTS
+)
 def test_auth_required(client: TestClient, template: str, method: str, placeholders: dict[str, str]) -> None:
     path = template.format(**placeholders)
     http_fn = getattr(client, method.lower())
@@ -24,7 +27,10 @@ def test_auth_required(client: TestClient, template: str, method: str, placehold
     assert response.headers["WWW-Authenticate"].startswith("Basic")
 
 
-@pytest.mark.parametrize("template, method, placeholders", PRIVATE_ENDPOINTS)
+@pytest.mark.parametrize(
+    "template, method, placeholders",
+    PRIVATE_ENDPOINTS
+)
 def test_invalid_credentials(client: TestClient, template: str, method: str, placeholders) -> None:
     path = template.format(**placeholders)
     http_fn = getattr(client, method.lower())
@@ -33,7 +39,10 @@ def test_invalid_credentials(client: TestClient, template: str, method: str, pla
     assert response.headers["WWW-Authenticate"].startswith("Basic")
 
 
-@pytest.mark.parametrize("template, method, placeholders", PRIVATE_ENDPOINTS)
+@pytest.mark.parametrize(
+    "template, method, placeholders",
+    PRIVATE_ENDPOINTS
+)
 def test_user_inactive(client: TestClient, db: Session, template: str, method: str, placeholders) -> None:
     username, password = "inactive_user", "inactive_user"
     try:
