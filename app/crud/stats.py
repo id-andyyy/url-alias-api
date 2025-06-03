@@ -18,10 +18,8 @@ def crud_log_click(db: Session, link_id: int) -> None:
         raise ClickLogError("Error while logging click")
 
 
-def crud_get_link_stats(db: Session, user_id: int, top: int = 10, sort_by: str = "all") -> list[
+def crud_get_top_links_stats(db: Session, user_id: int, top: int = 10, sort_by: str = "all") -> list[
     tuple[str, str, int, int, int]]:
-    print(">>> crud_get_link_stats вызван (А ТЕПЕРЬ ПОЙДЕМ ВЫПОЛНЯТЬ query.all())")
-
     now: datetime = datetime.now(timezone.utc)
     one_hour_ago: datetime = now - timedelta(hours=1)
     one_day_ago: datetime = now - timedelta(days=1)
@@ -34,8 +32,8 @@ def crud_get_link_stats(db: Session, user_id: int, top: int = 10, sort_by: str =
             func.count(Click.id).filter(Click.clicked_at >= one_day_ago).label("last_day_clicks"),
             func.count(Click.id).label("all_clicks")
         )
-        .outerjoin(Click, Click.link_id == Link.id)
         .filter(Link.user_id == user_id)
+        .outerjoin(Click, Click.link_id == Link.id)
         .group_by(Link.id)
     )
 
@@ -51,5 +49,25 @@ def crud_get_link_stats(db: Session, user_id: int, top: int = 10, sort_by: str =
     result = query.all()
     stats: list[tuple[str, str, int, int, int]] = [
         (row.orig_url, row.short_id, row.last_hour_clicks, row.last_day_clicks, row.all_clicks) for row in result]
-    print(f">>> Получено {len(result)} строк из links")
     return stats
+
+
+def crud_get_link_stats(db: Session, link: Link) -> tuple[str, str, int, int, int] | None:
+    now: datetime = datetime.now(timezone.utc)
+    one_hour_ago: datetime = now - timedelta(hours=1)
+    one_day_ago: datetime = now - timedelta(days=1)
+
+    query = (
+        db.query(
+            Link.orig_url,
+            Link.short_id,
+            func.count(Click.id).filter(Click.clicked_at >= one_hour_ago).label("last_hour_clicks"),
+            func.count(Click.id).filter(Click.clicked_at >= one_day_ago).label("last_day_clicks"),
+            func.count(Click.id).label("all_clicks")
+        )
+        .filter(Link.short_id == link.short_id)
+        .outerjoin(Click, Click.link_id == Link.id)
+        .group_by(Link.id)
+    )
+
+    return query.first()

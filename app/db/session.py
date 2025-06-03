@@ -6,7 +6,6 @@ from app.core.config import settings
 engine: Engine = create_engine(
     url=settings.DATABASE_URL_psycopg,
     pool_pre_ping=True,
-    echo=True
 )
 
 SessionLocal: sessionmaker[Session] = sessionmaker(
