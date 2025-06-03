@@ -13,7 +13,7 @@ router = APIRouter()
 
 @router.post(
     "/",
-    description="Create a new link. If a link with the same original URL already exists for the user, it returns that link instead.",
+    description="Create a new link.",
     response_model=LinkResponse,
     status_code=status.HTTP_201_CREATED,
     responses={
@@ -57,7 +57,7 @@ def create_link(
 
 @router.patch(
     "/{short_id}/deactivate",
-    description="Deactivate a link by its short ID",
+    description="Deactivate a link by its short ID.",
     response_model=LinkResponse,
     status_code=status.HTTP_200_OK,
     responses={
@@ -106,7 +106,7 @@ def deactivate_link(
 
 @router.get(
     "/",
-    description="Get all links for the current user with optional filters and pagination",
+    description="Get all links for the current user with optional filters and pagination.",
     response_model=LinkListResponse,
     status_code=status.HTTP_200_OK,
     responses={
@@ -122,7 +122,7 @@ def read_links(
         is_active: bool | None = Query(None,
                                        description="Filter active and inactive links. If not provided, all links are returned"),
         page: int = Query(1, ge=1, description="Page number for pagination"),
-        page_size: int = Query(10, ge=1, le=100, description="Page size for pagination (1-100)"),
+        page_size: int = Query(10, ge=1, le=100, description="Page size for pagination"),
         db: Session = Depends(get_db),
         current_user: User = Depends(get_current_user)
 ) -> LinkListResponse:

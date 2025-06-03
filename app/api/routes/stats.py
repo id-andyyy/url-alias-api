@@ -11,7 +11,7 @@ router = APIRouter()
 
 @router.get(
     "/",
-    description="",
+    description="Get statistics for the user's links.",
     response_model=StatsListResponse,
     status_code=status.HTTP_200_OK,
     responses={
@@ -21,11 +21,13 @@ router = APIRouter()
 )
 def get_links_stats(
         request: Request,
-        top: int = Query(100, ge=1, description=""),
+        top: int = Query(100, ge=1, description="Number of top links to retrieve"),
+        sort_by: str = Query("all", enum=["hour", "day", "all"],
+                             description="Sort by 'last_hour_clicks', 'last_day_clicks', or 'all_clicks'"),
         db: Session = Depends(get_db),
         current_user: User = Depends(get_current_user)
 ) -> StatsListResponse:
-    raw_stats: list[tuple[str, str, int, int, int]] = crud_get_link_stats(db, current_user.id, top)
+    raw_stats: list[tuple[str, str, int, int, int]] = crud_get_link_stats(db, current_user.id, top, sort_by)
     base_url: str = str(request.base_url).rstrip("/")
 
     items: list[StatsResponse] = []

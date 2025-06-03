@@ -1,6 +1,6 @@
 from datetime import datetime, timezone, timedelta
 
-from sqlalchemy import func
+from sqlalchemy import func, desc
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
@@ -18,7 +18,10 @@ def crud_log_click(db: Session, link_id: int) -> None:
         raise ClickLogError("Error while logging click")
 
 
-def crud_get_link_stats(db: Session, user_id: int, top: int = 10) -> list[tuple[str, str, int, int, int]]:
+def crud_get_link_stats(db: Session, user_id: int, top: int = 10, sort_by: str = "all") -> list[
+    tuple[str, str, int, int, int]]:
+    print(">>> crud_get_link_stats вызван (А ТЕПЕРЬ ПОЙДЕМ ВЫПОЛНЯТЬ query.all())")
+
     now: datetime = datetime.now(timezone.utc)
     one_hour_ago: datetime = now - timedelta(hours=1)
     one_day_ago: datetime = now - timedelta(days=1)
@@ -34,12 +37,19 @@ def crud_get_link_stats(db: Session, user_id: int, top: int = 10) -> list[tuple[
         .outerjoin(Click, Click.link_id == Link.id)
         .filter(Link.user_id == user_id)
         .group_by(Link.id)
-        .order_by(func.count(Click.id).desc())
-        .limit(top)
     )
+
+    if sort_by == "hour":
+        query = query.order_by(desc("last_hour_clicks"))
+    elif sort_by == "day":
+        query = query.order_by(desc("last_day_clicks"))
+    else:
+        query = query.order_by(desc("all_clicks"))
+
+    query = query.limit(top)
 
     result = query.all()
     stats: list[tuple[str, str, int, int, int]] = [
         (row.orig_url, row.short_id, row.last_hour_clicks, row.last_day_clicks, row.all_clicks) for row in result]
-
+    print(f">>> Получено {len(result)} строк из links")
     return stats
