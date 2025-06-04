@@ -16,7 +16,7 @@ def test_links(db: Session, test_user: User) -> list[Link]:
             short_id=f"active{i}",
             orig_url=f"https://example.com/{i}",
             user_id=test_user.id,
-            created_at=now - timedelta(minutes=i),  # Created 0, 1, 2 minutes ago
+            created_at=now - timedelta(minutes=i),
             expire_at=now + timedelta(minutes=10 - i),
             is_active=True
         )
@@ -27,7 +27,7 @@ def test_links(db: Session, test_user: User) -> list[Link]:
             short_id=f"expired{i}",
             orig_url=f"https://example.com/{i}",
             user_id=test_user.id,
-            created_at=now - timedelta(hours=1 + i),  # Created 1, 2 hours ago
+            created_at=now - timedelta(hours=1 + i),
             expire_at=now - timedelta(seconds=30 + i),
             is_active=True
         )
@@ -38,7 +38,7 @@ def test_links(db: Session, test_user: User) -> list[Link]:
             short_id=f"inactive{i}",
             orig_url=f"https://example.com/{i}",
             user_id=test_user.id,
-            created_at=now - timedelta(minutes=5 + i),  # Created 5, 6 minutes ago
+            created_at=now - timedelta(minutes=5 + i),
             expire_at=now + timedelta(minutes=20),
             is_active=False
         )

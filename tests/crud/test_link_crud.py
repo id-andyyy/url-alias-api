@@ -7,6 +7,7 @@ from sqlalchemy.orm import Session
 from app.crud.link import crud_get_link_by_short_id, crud_create_link, crud_get_user_links, crud_deactivate_link
 from app.exceptions import LinkCreateError, LinkUpdateError
 from app.models import Link, User
+from tests.fixtures.links import test_links
 
 
 def test_get_link_by_short_id_returns_none_if_not_exists(db: Session):
@@ -84,7 +85,7 @@ def test_create_link_raises_link_create_error_on_integrity_error(monkeypatch: py
     assert "Error while creating a link" in str(exc_info.value)
 
 
-def test_get_user_links_default_filters(db: Session, test_user: User, test_links):
+def test_get_user_links_default_filters(db: Session, test_user: User, test_links: list[Link]):
     results, total = crud_get_user_links(db=db, user_id=test_user.id, is_valid=True, is_active=True)
 
     assert total == 3
@@ -95,7 +96,7 @@ def test_get_user_links_default_filters(db: Session, test_user: User, test_links
         assert link.expire_at.replace(tzinfo=timezone.utc) >= datetime.now(timezone.utc)
 
 
-def test_get_user_links_expired(db: Session, test_user: User, test_links):
+def test_get_user_links_expired(db: Session, test_user: User, test_links: list[Link]):
     results, total = crud_get_user_links(db=db, user_id=test_user.id, is_valid=False, is_active=True)
 
     assert total == 2
@@ -106,7 +107,7 @@ def test_get_user_links_expired(db: Session, test_user: User, test_links):
         assert link.expire_at.replace(tzinfo=timezone.utc) < datetime.now(timezone.utc)
 
 
-def test_get_user_links_inactive(db: Session, test_user: User, test_links):
+def test_get_user_links_inactive(db: Session, test_user: User, test_links: list[Link]):
     results, total = crud_get_user_links(db=db, user_id=test_user.id, is_valid=True, is_active=False)
 
     assert total == 2
@@ -117,7 +118,7 @@ def test_get_user_links_inactive(db: Session, test_user: User, test_links):
         assert link.expire_at.replace(tzinfo=timezone.utc) >= datetime.now(timezone.utc)
 
 
-def test_get_user_links_pagination(db: Session, test_user: User, test_links):
+def test_get_user_links_pagination(db: Session, test_user: User, test_links: list[Link]):
     results, total = crud_get_user_links(db=db, user_id=test_user.id, is_valid=True, is_active=True, limit=2, offset=1)
 
     assert total == 3
@@ -128,7 +129,7 @@ def test_get_user_links_pagination(db: Session, test_user: User, test_links):
         assert link.expire_at.replace(tzinfo=timezone.utc) >= datetime.now(timezone.utc)
 
 
-def test_create_link_and_deactivate_and_update(db, test_user: User):
+def test_create_link_and_deactivate_and_update(db: Session, test_user: User):
     link: Link = crud_create_link(
         db=db,
         short_id="to_deactivate",

@@ -6,6 +6,7 @@ from sqlalchemy.orm import Session
 from app.crud.stats import crud_log_click, crud_get_stats_for_user_links, crud_get_stats_for_single_link
 from app.exceptions import ClickLogError
 from app.models import Link, Click, User
+from tests.fixtures.links import test_links
 
 
 def test_crud_log_click_success(db: Session, test_links: list[Link]):
