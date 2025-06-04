@@ -88,67 +88,67 @@
 ## &#128640;&nbsp;Как запустить сервис
 
 1. Склонируйте репозиторий и перейдите в папку с проектом:
-    ```
+    ```bash
     git clone https://github.com/id-andyyy/yadro-url-alias-intern.git
     cd yadro-url-alias-intern
     ```
 
 2. Создайте файл окружения на основе `.env.example`:
-    ```
+    ```bash
     cp .env.example .env
     ```
 
 3. Если необходимо, заполните переменные `DEFAULT_USER_USERNAME` и `DEFAULT_USER_USERNAME` в файле `.env` чтобы при запуске сервера автоматически создавался пользователь. По умолчанию создается пользователь `admin` с паролем `admin`.
 
 3. Запустите Docker Compose (не забудьте предварительно запустить Docker daemon):
-    ```
+    ```bash
     docker-compose up --build
     ```
     Дождитесь окончания процесса.
 
 4. Проверьте работоспособность через терминал:
-    ```
+    ```bash
     curl http://0.0.0.0:8080/api/health
     ```
     
     Предполагаемый ответ:
 
-    ```
+    ```bash
     {"status":"ok"}
     ```
 
     Или через Swagger UI в браузере:
 
-    ```
+    ```bash
     http://127.0.0.1:8080/docs
     ```
 
 5. Если хотите создать ещё одного пользователя:
     
     1. Перейдите в консоль:
-        ```
+        ```bash
         docker-compose exec web sh
         ```
     
     2. В консоли выполните команду (замените `new_user` и `secret_password` на желаемые значения):
-        ```
+        ```bash
         python3 create_user.py -u new_user -p secret_password
         ```
     
     3. Если создание пользователя прошло успешно, после сообщения о несовместимости версий (его можно проигнорировать), вы получите сообщение:
-        ```
+        ```bash
         New user created: username='new_user', id=2
         ```
 
     4. Для выхода из консоли выполните:
-        ```
+        ```bash
         exit
         ```
 
 ## 	&#129514;&nbsp;Как запустить тесты
 
 1. Создайте и активируйте виртуальное окружение:
-    ```
+    ```bash
     python3 -m venv .venv
 
     source .venv/bin/activate       # На macOS / Linux
@@ -156,12 +156,12 @@
     ```
 
 2. Установите зависимости
-    ```
+    ```bash
     pip install -r requirements.txt
     ```
 
 3. Запустите тесты командой:
-    ```
+    ```bash
     pytest
     ```
 
