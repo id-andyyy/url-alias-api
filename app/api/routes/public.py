@@ -44,7 +44,7 @@ def redirect_to_original(
         )
 
     now: datetime = datetime.now(timezone.utc)
-    if link.expire_at <= now:
+    if link.expire_at.replace(tzinfo=timezone.utc) <= now:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Link has expired",
