@@ -1,5 +1,7 @@
-![GitHub Created At](https://img.shields.io/github/created-at/id-andyyy/yadro-url-alias-intern?style=flat&color=1E22AA)
-![Lines Of Code](https://tokei.rs/b1/github/id-andyyy/yadro-url-alias-intern?style=flat&category=code&color=A3B43A)
+![Art](https://i.postimg.cc/fTLsktHz/art.png)
+
+![GitHub Created At](https://img.shields.io/github/created-at/id-andyyy/yadro-url-alias-intern?style=flat&color=000745)
+![Lines Of Code](https://tokei.rs/b1/github/id-andyyy/yadro-url-alias-intern?style=flat&category=code&color=3FDFFF)
 ![Top Language](https://img.shields.io/github/languages/top/id-andyyy/yadro-url-alias-intern?style=flat)
 
 # URL Alias Service
