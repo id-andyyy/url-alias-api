@@ -13,7 +13,7 @@ from tests.fixtures.user import override_get_current_user
 
 def test_create_link_success(client: TestClient, db: Session, test_user: User):
     expire_seconds: int = 3600
-    payload = {
+    payload: dict[str, any] = {
         "orig_url": "https://example.com/xyz?page=12&filter=price",
         "expire_seconds": expire_seconds
     }
@@ -22,7 +22,7 @@ def test_create_link_success(client: TestClient, db: Session, test_user: User):
     after: datetime = datetime.now(timezone.utc)
     assert response.status_code == status.HTTP_201_CREATED
 
-    data = response.json()
+    data: dict[str, any] = response.json()
     assert "short_id" in data
     assert data["orig_url"] == "https://example.com/xyz?page=12&filter=price"
     assert data["user_id"] == test_user.id
@@ -49,7 +49,7 @@ def test_create_link_shortid_error(monkeypatch: pytest.MonkeyPatch, client: Test
         lambda db: (_ for _ in ()).throw(ShortIdGenerationError("cannot generate"))
     )
 
-    payload = {
+    payload: dict[str, any] = {
         "orig_url": "https://example.com/bad",
         "expire_seconds": 3600
     }
@@ -74,12 +74,12 @@ def test_create_link_crud_create_error(monkeypatch: pytest.MonkeyPatch, client: 
     monkeypatch.setattr("app.api.routes.links.generate_short_id", fake_generate)
     monkeypatch.setattr("app.api.routes.links.crud_create_link", fake_crud_create)
 
-    payload = {
+    payload: dict[str, any] = {
         "orig_url": "https://example.com/error",
         "expire_seconds": 60
     }
     response = client.post("/api/links", json=payload)
-    data = response.json()
+    data: dict[str, any] = response.json()
     assert response.status_code == status.HTTP_400_BAD_REQUEST
     assert "crud failed" in data["detail"]
 
@@ -92,7 +92,7 @@ def test_deactivate_link_success(db: Session, client: TestClient, test_user: Use
 
     response = client.patch(f"/api/links/{short_id}/deactivate")
     assert response.status_code == status.HTTP_200_OK
-    data = response.json()
+    data: dict[str, any] = response.json()
     assert data["short_id"] == short_id
     assert data["is_active"] is False
     assert data["user_id"] == test_user.id
@@ -103,7 +103,7 @@ def test_deactivate_link_success(db: Session, client: TestClient, test_user: Use
 
 def test_deactivate_link_not_found(client: TestClient):
     response = client.patch("/api/links/nonexisting/deactivate")
-    data = response.json()
+    data: dict[str, any] = response.json()
     assert response.status_code == status.HTTP_404_NOT_FOUND
     assert "Link not found" in data["detail"]
 
@@ -132,7 +132,7 @@ def test_deactivate_link_permission_denied(
     db.commit()
 
     response = client.patch(f"/api/links/{foreign_link.short_id}/deactivate")
-    data = response.json()
+    data: dict[str, any] = response.json()
     assert response.status_code == status.HTTP_403_FORBIDDEN
     assert "permission" in data["detail"]
 
@@ -155,7 +155,7 @@ def test_deactivate_link_crud_update_error(
     monkeypatch.setattr("app.api.routes.links.crud_deactivate_link", fake_deactivate)
 
     response = client.patch(f"/api/links/{link.short_id}/deactivate")
-    data = response.json()
+    data: dict[str, any] = response.json()
     assert response.status_code == status.HTTP_400_BAD_REQUEST
     assert "cannot update" in data["detail"]
 
@@ -164,7 +164,7 @@ def test_read_links_default_pagination(client: TestClient, test_links: list[Link
     response = client.get("/api/links")
     assert response.status_code == status.HTTP_200_OK
 
-    data = response.json()
+    data: dict[str, any] = response.json()
     assert data["page"] == 1
     assert data["page_size"] == 10
     assert data["total_items"] == len(test_links)
@@ -179,7 +179,7 @@ def test_read_links_default_pagination(client: TestClient, test_links: list[Link
 def test_read_links_with_page_size_and_page(client: TestClient, test_links: list[Link]):
     response = client.get("/api/links/?page=2&page_size=3")
     assert response.status_code == status.HTTP_200_OK
-    data = response.json()
+    data: dict[str, any] = response.json()
     assert data["page"] == 2
     assert data["page_size"] == 3
     assert data["total_items"] == len(test_links)
@@ -190,7 +190,7 @@ def test_read_links_with_page_size_and_page(client: TestClient, test_links: list
 def test_read_links_filter_is_active_true(client: TestClient, test_links: list[Link]):
     response = client.get("/api/links/?is_active=true")
     assert response.status_code == status.HTTP_200_OK
-    data = response.json()
+    data: dict[str, any] = response.json()
     assert data["total_items"] == 5
     assert len(data["items"]) == 5
 
@@ -199,7 +199,7 @@ def test_read_links_filter_is_active_false(client: TestClient, test_links: list[
     response = client.get("/api/links/?is_active=false")
     assert response.status_code == status.HTTP_200_OK
 
-    data = response.json()
+    data: dict[str, any] = response.json()
     assert data["total_items"] == 2
     assert len(data["items"]) == 2
 
@@ -215,7 +215,7 @@ def test_read_links_filter_is_valid_true(client: TestClient, test_links: list[Li
     response = client.get("/api/links/?is_valid=true")
     assert response.status_code == status.HTTP_200_OK
 
-    data = response.json()
+    data: dict[str, any] = response.json()
     assert data["total_items"] == len(valid_links)
     assert len(data["items"]) == len(valid_links)
 
@@ -232,7 +232,7 @@ def test_read_links_filter_is_valid_false(client: TestClient, test_links: list[L
 
     response = client.get("/api/links/?is_valid=false")
     assert response.status_code == status.HTTP_200_OK
-    data = response.json()
+    data: dict[str, any] = response.json()
     assert data["total_items"] == len(invalid_links)
     assert len(data["items"]) == len(invalid_links)
     for item in data["items"]:

@@ -19,7 +19,7 @@ def test_integrity_error_handler(client: TestClient):
     response = client.get("/api/test_integrity_error")
     assert response.status_code == 400
 
-    data = response.json()
+    data: dict[str, any] = response.json()
     assert "message" in data
     assert "Database integrity error" in data["message"]
     assert "unique constraint failed" in data["message"]

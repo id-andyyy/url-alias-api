@@ -24,7 +24,7 @@ def test_read_top_links_stats_default_params(client: TestClient, monkeypatch: py
     response = client.get("/api/stats")
     assert response.status_code == status.HTTP_200_OK
 
-    data = response.json()
+    data: dict[str, any] = response.json()
     parsed: StatsListResponse = StatsListResponse(**data)
     print(parsed)
 
@@ -53,7 +53,7 @@ def test_read_top_links_stats_with_query_params(client: TestClient, monkeypatch:
     response = client.get("/api/stats/?top=5&sort_by=day")
     assert response.status_code == status.HTTP_200_OK
 
-    data = response.json()
+    data: dict[str, any] = response.json()
     parsed: StatsListResponse = StatsListResponse(**data)
 
     assert len(parsed.items) == 1
@@ -71,7 +71,7 @@ def test_read_link_stats_not_found(client: TestClient, monkeypatch: pytest.Monke
     response = client.get("/api/stats/nonexistent")
     assert response.status_code == status.HTTP_404_NOT_FOUND
 
-    data = response.json()
+    data: dict[str, any] = response.json()
     assert data["detail"] == "Link not found"
 
 
@@ -98,7 +98,7 @@ def test_read_link_stats_forbidden_if_not_owner(
     response = client.get("/api/stats/XYZ123")
     assert response.status_code == status.HTTP_403_FORBIDDEN
 
-    data = response.json()
+    data: dict[str, any] = response.json()
     assert "You do not have permission" in data["detail"]
 
 
@@ -129,7 +129,7 @@ def test_read_link_stats_stats_not_found(
     response = client.get("/api/stats/OWN001")
     assert response.status_code == status.HTTP_404_NOT_FOUND
 
-    data = response.json()
+    data: dict[str, any] = response.json()
     assert data["detail"] == "Stats not found"
 
 
@@ -164,7 +164,7 @@ def test_read_link_stats_success(
     response = client.get(f"/api/stats/{link.short_id}")
     assert response.status_code == status.HTTP_200_OK
 
-    data = response.json()
+    data: dict[str, any] = response.json()
     parsed: StatsResponse = StatsResponse(**data)
 
     orig_url, short_id, last_hour, last_day, all_clicks = fake_single_stats
