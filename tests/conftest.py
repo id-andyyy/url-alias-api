@@ -1,11 +1,14 @@
 import pytest
 from fastapi.testclient import TestClient
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, event
 from sqlalchemy.orm import sessionmaker
 
 from app.api.deps import get_db
+from app.crud.user import crud_create_user
+from app.exceptions import UserAlreadyExistsError
 from app.main import app
 from app.db.base import Base
+from app.models import User
 
 DATABASE_URL = "sqlite+pysqlite:///:memory:"
 
@@ -30,6 +33,11 @@ def init_db():
 @pytest.fixture()
 def db():
     connection = engine.connect()
+
+    @event.listens_for(connection, "begin")
+    def _fk_pragma(conn):
+        conn.exec_driver_sql("PRAGMA foreign_keys=ON")
+
     transaction = connection.begin()
     session = TestingSessionLocal(bind=connection)
     yield session
@@ -54,19 +62,12 @@ def client(db):
         app.dependency_overrides[get_db] = original
 
 
-
-# @pytest.fixture()
-# def test_user(db):
-#     """
-#     Создаёт в тестовой БД пользователя с правами доступа.
-#     Возвращает копию объекта User для использования в тестах.
-#     """
-#     username = "testuser"
-#     password = "testpass"
-#     try:
-#         user: User = crud_create_user(db, username=username, plain_password=password)
-#         db.commit()
-#     except UserAlreadyExistsError:
-#         # Если пользователь уже есть (маловероятно в sqlite:///:memory:), просто заберём его
-#         user = db.query(User).filter(User.username == username).first()
-#     return {"username": username, "password": password, "id": user.id}
+@pytest.fixture()
+def test_user(db) -> User:
+    username = "testuser"
+    password = "testpass"
+    try:
+        user: User = crud_create_user(db, username=username, plain_password=password)
+    except UserAlreadyExistsError:
+        user: User = db.query(User).filter(User.username == username).first()
+    return user

@@ -33,7 +33,6 @@ coverage.xml
 
 # Docker artifacts
 docker-compose.override.yml
-*.log
 
 # Alembic
 alembic/versions/*.pyc
