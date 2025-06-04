@@ -108,7 +108,12 @@ def test_deactivate_link_not_found(client: TestClient):
     assert "Link not found" in data["detail"]
 
 
-def test_deactivate_link_permission_denied(db: Session, client: TestClient, test_user: User, test_links: list[Link]):
+def test_deactivate_link_permission_denied(
+        db: Session,
+        client: TestClient,
+        test_user: User,
+        test_links: list[Link]
+):
     other_user: User = User(username="other_user", password_hash="passqord")
     db.add(other_user)
     db.commit()
@@ -132,8 +137,12 @@ def test_deactivate_link_permission_denied(db: Session, client: TestClient, test
     assert "permission" in data["detail"]
 
 
-def test_deactivate_link_crud_update_error(monkeypatch: pytest.MonkeyPatch, db: Session, client: TestClient,
-                                           test_links: list[Link]):
+def test_deactivate_link_crud_update_error(
+        monkeypatch: pytest.MonkeyPatch,
+        db: Session,
+        client: TestClient,
+        test_links: list[Link]
+):
     link: Link = test_links[0]
     monkeypatch.setattr(
         "app.api.routes.links.crud_get_link_by_short_id",

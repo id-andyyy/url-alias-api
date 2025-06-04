@@ -89,11 +89,6 @@ def deactivate_link(
                 detail="You do not have permission to deactivate this link"
             )
         link: Link | None = crud_deactivate_link(db, link)
-    except LinkNotFoundError as e:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=str(e),
-        )
     except LinkUpdateError as e:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
