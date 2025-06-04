@@ -1,7 +1,7 @@
 import pytest
 from fastapi import status
 from sqlalchemy.orm import Session
-from starlette.testclient import TestClient
+from fastapi.testclient import TestClient
 
 from app.exceptions import ClickLogError
 from app.models import Link
