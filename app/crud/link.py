@@ -31,16 +31,7 @@ def crud_get_user_links(
 
     total: int = query.count()
 
-    return query.offset(offset).limit(limit).all(), total
-
-
-def crud_get_active_user_link_by_orig_url(db: Session, orig_url: str, user_id: int) -> Link | None:
-    return db.query(Link).filter(
-        Link.orig_url == orig_url,
-        Link.user_id == user_id,
-        Link.is_active == True,
-        Link.expire_at > datetime.now(timezone.utc)
-    ).first()
+    return query.order_by(Link.created_at.desc()).offset(offset).limit(limit).all(), total
 
 
 def crud_create_link(

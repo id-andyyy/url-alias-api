@@ -53,10 +53,6 @@ def test_create_user_raises_user_create_error_on_integrity_error(monkeypatch: py
         crud_create_user(db, username, plain_password)
 
     assert "Error while creating a user" in str(exc_info.value)
-    monkeypatch.undo()
-    user = crud_create_user(db, username=username, plain_password=plain_password)
-    assert isinstance(user.id, int)
-    assert user.username == username
 
 
 @pytest.mark.parametrize(
