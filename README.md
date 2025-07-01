@@ -1,12 +1,13 @@
-![Art](https://i.postimg.cc/fTLsktHz/art.png)
+![Art](https://i.postimg.cc/XYf5YtLW/art.png)
 
-![GitHub Created At](https://img.shields.io/github/created-at/id-andyyy/yadro-url-alias-intern?style=flat&color=000745)
-![](https://tokei.rs/b1/github/id-andyyy/yadro-url-alias-intern?style=flat&category=code&color=3FDFFF)
-![Top Language](https://img.shields.io/github/languages/top/id-andyyy/yadro-url-alias-intern?style=flat)
+![GitHub Created At](https://img.shields.io/github/created-at/id-andyyy/url-alias-api?style=flat&color=3C0081)
+![](https://tokei.rs/b1/github/id-andyyy/url-alias-api?style=flat&category=code&color=3FDFFF)
+![Top Language](https://img.shields.io/github/languages/top/id-andyyy/url-alias-api?style=flat)
+![Pet Project](https://img.shields.io/badge/pet-project-8400FF)
 
 # URL Alias Service
 
-Тестовое задание на стажировку [YADRO ИМПУЛЬС&nbsp;&#127775;](https://edu.yadro.com/impulse/). Cервис преобразования длинных URL в короткие уникальные URL, c возможностью просмотра статистики.&nbsp;&#128279; Ссылка на [текст задания](https://docs.google.com/document/d/18e3rqR9rEGgIW7lrWc6WYCMidNB-2DbB/edit?usp=sharing&ouid=107124781228306455180&rtpof=true&sd=true).
+Cервис преобразования длинных URL в короткие уникальные URL, c возможностью просмотра статистики&nbsp;&#128279;.
 
 ## &#128268;&nbsp;API Endpoints
 
@@ -89,8 +90,8 @@
 
 1. Склонируйте репозиторий и перейдите в папку с проектом:
     ```bash
-    git clone https://github.com/id-andyyy/yadro-url-alias-intern.git
-    cd yadro-url-alias-intern
+    git clone https://github.com/id-andyyy/url-alias-api.git
+    cd url-alias-api
     ```
 
 2. Создайте файл окружения на основе `.env.example`:
@@ -209,4 +210,6 @@ requirements.txt        # Список зависимостей
 
 ## &#128232;&nbsp;Обратная связь
 
-Буду признателен, если вы поставите звезду&nbsp;&#11088;. Если вы нашли баг или у вас есть предложения по улучшению, используйте раздел [Issues](https://github.com/id-andyyy/yadro-url-alias-intern/issues).
+Буду признателен, если вы поставите звезду&nbsp;&#11088;. Если вы нашли баг или у вас есть предложения по улучшению, используйте раздел [Issues](https://github.com/id-andyyy/url-alias-api/issues).
+
+Read in [English&nbsp;&#127468;&#127463;](README-en.md)
